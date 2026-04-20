@@ -1,0 +1,207 @@
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
+import { authService } from '../../services/authService';
+import { toast } from 'react-toastify';
+import { FiUser, FiMail, FiPhone, FiLock, FiCalendar, FiEdit2 } from 'react-icons/fi';
+import './Profile.css';
+
+const Profile = () => {
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  
+  const [profileForm, setProfileForm] = useState({
+    full_name: '',
+    phone: ''
+  });
+
+  const [passwordForm, setPasswordForm] = useState({
+    current_password: '',
+    new_password: '',
+    confirm_password: ''
+  });
+
+  useEffect(() => {
+    if (user) {
+      setProfileForm({
+        full_name: user.full_name || '',
+        phone: user.phone || ''
+      });
+    }
+  }, [user]);
+
+  const handleUpdateProfile = async (e) => {
+    e.preventDefault();
+    if (!profileForm.full_name) {
+      toast.error('Họ tên không được để trống');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await authService.updateProfile({ 
+        full_name: profileForm.full_name,
+        phone: profileForm.phone 
+      });
+      
+      const updatedUser = { ...user, ...profileForm };
+      const authData = JSON.parse(localStorage.getItem('auth_data'));
+      localStorage.setItem('auth_data', JSON.stringify({ ...authData, user: updatedUser }));
+      
+      toast.success('Cập nhật thông tin thành công');
+      setTimeout(() => window.location.reload(), 1000);
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Lỗi cập nhật thông tin');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    if (!passwordForm.current_password || !passwordForm.new_password) {
+      toast.error('Vui lòng điền đầy đủ thông tin mật khẩu');
+      return;
+    }
+    if (passwordForm.new_password !== passwordForm.confirm_password) {
+      toast.error('Mật khẩu xác nhận không khớp. Vui lòng nhập lại cho đúng.');
+      // Clear confirmation field to force re-entry
+      setPasswordForm(prev => ({ ...prev, confirm_password: '' }));
+      return;
+    }
+    if (passwordForm.new_password.length < 6) {
+      toast.error('Mật khẩu mới phải có ít nhất 6 ký tự');
+      return;
+    }
+
+    setPasswordLoading(true);
+    try {
+      await authService.changePassword({
+        current_password: passwordForm.current_password,
+        new_password: passwordForm.new_password
+      });
+      toast.success('Đổi mật khẩu thành công');
+      setPasswordForm({
+        current_password: '',
+        new_password: '',
+        confirm_password: ''
+      });
+    } catch (err) {
+      const errorMsg = err.response?.data?.error || 'Lỗi đổi mật khẩu';
+      toast.error(errorMsg);
+      // If current password is wrong, clear it to force "nhập lại cho đúng"
+      if (errorMsg.includes('Mật khẩu hiện tại')) {
+        setPasswordForm(prev => ({ ...prev, current_password: '' }));
+      }
+    } finally {
+      setPasswordLoading(false);
+    }
+  };
+
+  if (!user) return <div className="loading-container"><div className="spinner"></div></div>;
+
+  return (
+    <div className="profile-container fade-in">
+      <div className="profile-layout">
+        
+        {/* Column 1: Info Sidebar */}
+        <div className="profile-sidebar glass-card profile-section">
+          <div className="profile-avatar-large">
+            {user.full_name?.charAt(0).toUpperCase() || 'U'}
+          </div>
+          <h2 className="profile-name-sidebar">{user.full_name}</h2>
+          <span className="profile-role-badge">Tài khoản Bệnh nhân</span>
+          
+          <div className="profile-info-list">
+            <div className="info-item">
+              <FiMail /> <span>{user.email}</span>
+            </div>
+            <div className="info-item">
+              <FiPhone /> <span>{user.phone || 'Chưa cập nhật'}</span>
+            </div>
+            <div className="info-item">
+              <FiCalendar /> <span>Tham gia: {new Date(user.created_at || Date.now()).toLocaleDateString('vi-VN')}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Column 2: Edit Profile */}
+        <section className="profile-section glass-card">
+          <h3 className="section-title">
+            <FiEdit2 /> Chỉnh sửa thông tin
+          </h3>
+          <form className="profile-form" onSubmit={handleUpdateProfile}>
+            <div className="form-group">
+              <label className="label">Họ và tên</label>
+              <input 
+                type="text" 
+                className="input-field" 
+                value={profileForm.full_name}
+                onChange={(e) => setProfileForm({...profileForm, full_name: e.target.value})}
+                placeholder="Nhập họ tên của bạn"
+              />
+            </div>
+            <div className="form-group">
+              <label className="label">Số điện thoại</label>
+              <input 
+                type="text" 
+                className="input-field" 
+                value={profileForm.phone}
+                onChange={(e) => setProfileForm({...profileForm, phone: e.target.value})}
+                placeholder="Nhập số điện thoại"
+              />
+            </div>
+            <button type="submit" className="btn-primary btn-profile-save" disabled={loading}>
+              {loading ? 'Đang lưu...' : 'Lưu thay đổi'}
+            </button>
+          </form>
+        </section>
+
+        {/* Column 3: Change Password */}
+        <section className="profile-section glass-card password-section">
+          <h3 className="section-title">
+            <FiLock /> Đổi mật khẩu
+          </h3>
+          <form className="profile-form" onSubmit={handleChangePassword}>
+            <div className="form-group">
+              <label className="label">Mật khẩu hiện tại</label>
+              <input 
+                type="password" 
+                className="input-field" 
+                value={passwordForm.current_password}
+                onChange={(e) => setPasswordForm({...passwordForm, current_password: e.target.value})}
+                placeholder="••••••••"
+              />
+            </div>
+            <div className="form-group">
+              <label className="label">Mật khẩu mới</label>
+              <input 
+                type="password" 
+                className="input-field" 
+                value={passwordForm.new_password}
+                onChange={(e) => setPasswordForm({...passwordForm, new_password: e.target.value})}
+                placeholder="Tối thiểu 6 ký tự"
+              />
+            </div>
+            <div className="form-group">
+              <label className="label">Xác nhận mật khẩu</label>
+              <input 
+                type="password" 
+                className="input-field" 
+                value={passwordForm.confirm_password}
+                onChange={(e) => setPasswordForm({...passwordForm, confirm_password: e.target.value})}
+                placeholder="Nhập lại mật khẩu mới"
+              />
+            </div>
+            <button type="submit" className="btn-primary btn-profile-save" style={{ background: 'linear-gradient(135deg, #FF416C 0%, #FF4B2B 100%)' }} disabled={passwordLoading}>
+              {passwordLoading ? 'Đang cập nhật...' : 'Đổi mật khẩu'}
+            </button>
+          </form>
+        </section>
+
+      </div>
+    </div>
+  );
+};
+
+export default Profile;

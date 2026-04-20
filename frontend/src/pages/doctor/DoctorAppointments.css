@@ -1,0 +1,72 @@
+.da-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.da-card {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+}
+
+.da-patient {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.da-patient-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--gradient-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.da-patient h3 { font-size: 0.95rem; margin-bottom: 2px; }
+.da-patient p { font-size: 0.8rem; color: var(--text-muted); }
+
+.da-schedule {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.da-schedule span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.da-note {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+.da-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .da-card {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .da-actions {
+    justify-content: flex-start;
+  }
+}

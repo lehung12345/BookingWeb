@@ -1,0 +1,225 @@
+.admin-auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--dark-bg, #0f172a); /* dark theme fallback */
+  position: relative;
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+}
+
+.admin-auth-bg-shapes {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.admin-shape {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.6;
+}
+
+.admin-shape-1 {
+  width: 400px;
+  height: 400px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  top: -100px;
+  left: -100px;
+  animation: admin-float 10s infinite ease-in-out alternate;
+}
+
+.admin-shape-2 {
+  width: 500px;
+  height: 500px;
+  background: linear-gradient(135deg, #10b981, #06b6d4);
+  bottom: -150px;
+  right: -150px;
+  animation: admin-float 12s infinite ease-in-out alternate-reverse;
+}
+
+@keyframes admin-float {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(30px, 30px) scale(1.05); }
+  100% { transform: translate(-20px, 20px) scale(0.95); }
+}
+
+.admin-auth-card {
+  width: 100%;
+  max-width: 440px;
+  background: rgba(30, 41, 59, 0.7); /* dark glass */
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 40px;
+  z-index: 1;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.fade-in {
+  animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.admin-auth-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.admin-auth-logo {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #ef4444, #f59e0b);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  color: white;
+  font-size: 28px;
+  box-shadow: 0 8px 16px rgba(239, 68, 68, 0.3);
+}
+
+.admin-auth-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+}
+
+.admin-auth-subtitle {
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.admin-api-error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  padding: 12px 16px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.admin-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.admin-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #cbd5e1;
+  margin-left: 4px;
+}
+
+.admin-input-wrapper {
+  position: relative;
+}
+
+.admin-input-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 18px;
+}
+
+.admin-input-field {
+  width: 100%;
+  padding: 14px 16px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: white;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  box-sizing: border-box; /* Ensures width: 100% does exactly that */
+}
+
+.admin-input-with-icon {
+  padding-left: 48px;
+}
+
+.admin-input-field:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background: rgba(15, 23, 42, 0.8);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.admin-input-field::placeholder {
+  color: #64748b;
+}
+
+.admin-input-error {
+  border-color: #ef4444;
+}
+
+.admin-error-text {
+  color: #ef4444;
+  font-size: 13px;
+  margin-left: 4px;
+}
+
+.admin-btn-primary {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  border: none;
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  margin-top: 10px;
+}
+
+.admin-btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(37, 99, 235, 0.4);
+}
+
+.admin-btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.admin-btn-primary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* responsive */
+@media (max-width: 480px) {
+  .admin-auth-card {
+    border-radius: 0;
+    min-height: 100vh;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
