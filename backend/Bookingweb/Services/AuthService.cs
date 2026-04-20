@@ -115,7 +115,7 @@ namespace Bookingweb.Services
             var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY") ?? "Your_Super_Secret_Key_At_Least_32_Chars";
             var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER") ?? "BookingWeb";
             var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE") ?? "BookingWebUser";
-            var expireMinutes = _config["Jwt:ExpireMinutes"] ?? "1440";
+            var expireMinutes = Environment.GetEnvironmentVariable("JWT_EXPIRE_MINUTES") ?? "1440";
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
