@@ -1,11 +1,13 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { FiHome, FiLogOut, FiUser, FiCalendar, FiGrid, FiHeart } from 'react-icons/fi';
+import { useTheme } from '../context/ThemeContext';
+import { FiHome, FiLogOut, FiUser, FiCalendar, FiGrid, FiHeart, FiSun, FiMoon } from 'react-icons/fi';
 import './Navbar.css';
 
 const Navbar = () => {
   const { isAuthenticated, user, logout, isUser, isDoctor, isAdmin } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -20,6 +22,19 @@ const Navbar = () => {
   };
 
   const isActive = (path) => location.pathname === path || location.pathname.startsWith(path + '/');
+
+  const ThemeToggleBtn = () => (
+    <button
+      className="btn-theme-toggle"
+      onClick={toggleTheme}
+      title={theme === 'dark' ? 'Chuyển sang giao diện sáng' : 'Chuyển sang giao diện tối'}
+      id="btn-theme-toggle"
+    >
+      <span className="theme-icon">
+        {theme === 'dark' ? <FiSun /> : <FiMoon />}
+      </span>
+    </button>
+  );
 
   return (
     <nav className="navbar" id="main-navbar">
@@ -38,6 +53,7 @@ const Navbar = () => {
               <Link to="/doctors" className={`nav-link ${isActive('/doctors') ? 'active' : ''}`}>
                 Bác sĩ
               </Link>
+              <ThemeToggleBtn />
               <Link to="/login" className="btn-primary btn-sm">
                 Đăng nhập
               </Link>
@@ -53,6 +69,7 @@ const Navbar = () => {
               <Link to="/my-appointments" className={`nav-link ${isActive('/my-appointments') ? 'active' : ''}`}>
                 <FiCalendar /> Lịch hẹn
               </Link>
+              <ThemeToggleBtn />
               <Link to="/profile" className="nav-user" title="Trang cá nhân">
                 <FiUser className="user-icon" />
                 <span>{user?.full_name}</span>
@@ -72,6 +89,7 @@ const Navbar = () => {
               <Link to="/doctor/appointments" className={`nav-link ${isActive('/doctor/appointments') ? 'active' : ''}`}>
                 Bệnh nhân
               </Link>
+              <ThemeToggleBtn />
               <div className="nav-user">
                 <FiUser className="user-icon" />
                 <span>BS. {user?.full_name}</span>
@@ -97,6 +115,7 @@ const Navbar = () => {
               <Link to="/admin/appointments" className={`nav-link ${isActive('/admin/appointments') ? 'active' : ''}`}>
                 Lịch hẹn
               </Link>
+              <ThemeToggleBtn />
               <div className="nav-user">
                 <FiUser className="user-icon" />
                 <span>Admin</span>
