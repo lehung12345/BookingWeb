@@ -4,6 +4,19 @@ import { toast } from 'react-toastify';
 import { FiPlus, FiTrash2, FiCalendar, FiClock } from 'react-icons/fi';
 import './DoctorSchedule.css';
 
+// Helper: parse "HH:MM" -> { h, m }
+const parseHM = (val) => {
+  if (!val) return { h: '', m: '' };
+  const [h, m] = val.split(':');
+  return { h: h || '', m: m || '' };
+};
+
+// Helper: build "HH:MM" from h, m strings
+const buildHM = (h, m) => {
+  if (h === '' && m === '') return '';
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+};
+
 const DoctorSchedule = () => {
   const [schedules, setSchedules] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -67,16 +80,7 @@ const DoctorSchedule = () => {
     return acc;
   }, {});
 
-  //format 24h 
-  const formatTime24h = (time) => {
-    if (!time) return "";
 
-    return new Date(`1970-01-01T${time}`).toLocaleTimeString('vi-VN', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false
-    });
-  };
 
   if (loading) return <div className="loading-container"><div className="spinner"></div></div>;
 
@@ -102,13 +106,55 @@ const DoctorSchedule = () => {
             </div>
             <div className="form-group">
               <label className="label"><FiClock /> Giờ bắt đầu</label>
-              <input type="time" className="input-field" value={form.start_time}
-                onChange={(e) => setForm({ ...form, start_time: e.target.value })} id="schedule-start" />
+              <div className="time-picker-24h">
+                <input
+                  type="number" min="0" max="23" placeholder="HH"
+                  className="time-part-input"
+                  id="schedule-start-h"
+                  value={parseHM(form.start_time).h}
+                  onChange={(e) => {
+                    const h = Math.max(0, Math.min(23, Number(e.target.value)));
+                    setForm({ ...form, start_time: buildHM(h, parseHM(form.start_time).m) });
+                  }}
+                />
+                <span className="time-sep">:</span>
+                <input
+                  type="number" min="0" max="59" placeholder="MM"
+                  className="time-part-input"
+                  id="schedule-start-m"
+                  value={parseHM(form.start_time).m}
+                  onChange={(e) => {
+                    const m = Math.max(0, Math.min(59, Number(e.target.value)));
+                    setForm({ ...form, start_time: buildHM(parseHM(form.start_time).h, m) });
+                  }}
+                />
+              </div>
             </div>
             <div className="form-group">
               <label className="label"><FiClock /> Giờ kết thúc</label>
-              <input type="time" className="input-field" value={form.end_time}
-                onChange={(e) => setForm({ ...form, end_time: e.target.value })} id="schedule-end" />
+              <div className="time-picker-24h">
+                <input
+                  type="number" min="0" max="23" placeholder="HH"
+                  className="time-part-input"
+                  id="schedule-end-h"
+                  value={parseHM(form.end_time).h}
+                  onChange={(e) => {
+                    const h = Math.max(0, Math.min(23, Number(e.target.value)));
+                    setForm({ ...form, end_time: buildHM(h, parseHM(form.end_time).m) });
+                  }}
+                />
+                <span className="time-sep">:</span>
+                <input
+                  type="number" min="0" max="59" placeholder="MM"
+                  className="time-part-input"
+                  id="schedule-end-m"
+                  value={parseHM(form.end_time).m}
+                  onChange={(e) => {
+                    const m = Math.max(0, Math.min(59, Number(e.target.value)));
+                    setForm({ ...form, end_time: buildHM(parseHM(form.end_time).h, m) });
+                  }}
+                />
+              </div>
             </div>
             <button type="submit" className="btn-primary sf-submit" disabled={creating}>
               {creating ? 'Đang tạo...' : 'Tạo'}
@@ -131,7 +177,7 @@ const DoctorSchedule = () => {
                   <div key={s.id} className={`schedule-slot glass-card ${s.is_booked ? 'booked' : ''}`} id={`schedule-${s.id}`}>
                     <span className="slot-time">
                       {/* <FiClock /> {s.start_time?.substring(0, 5)} - {s.end_time?.substring(0, 5)} */}
-                      <FiClock /> {formatTime24h(s.start_time)} - {formatTime24h(s.end_time)}
+                      <FiClock /> {s.start_time?.substring(0,5)} - {s.end_time?.substring(0,5)}
                     </span>
                     <span className={`slot-status ${s.is_booked ? 'slot-booked' : 'slot-free'}`}>
                       {s.is_booked ? '🔴 Đã đóng' : '🟢 Trống'}
