@@ -39,6 +39,8 @@ const AdminDoctors = () => {
       const payload = { ...form, specialty_id: form.specialty_id ? parseInt(form.specialty_id) : null };
       if (editId) {
         await adminService.updateDoctor(editId, {
+          full_name: payload.full_name,
+          phone: payload.phone,
           specialty_id: payload.specialty_id,
           description: payload.description,
           experience_years: payload.experience_years

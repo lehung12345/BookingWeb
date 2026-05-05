@@ -117,9 +117,15 @@ namespace Bookingweb.Services
 
         public async Task<bool> UpdateDoctor(Guid doctorId, UpdateDoctorRequest request)
         {
-            var doc = await _context.doctors.FindAsync(doctorId);
+            var doc = await _context.doctors
+                .Include(d => d.user)
+                .FirstOrDefaultAsync(d => d.id == doctorId);
             if (doc == null) return false;
 
+            if (!string.IsNullOrEmpty(request.full_name))
+                doc.user.full_name = request.full_name;
+            if (!string.IsNullOrEmpty(request.phone))
+                doc.phone = request.phone;
             if (request.specialty_id.HasValue)
                 doc.specialty_id = request.specialty_id;
             if (request.description != null)

@@ -26,6 +26,8 @@ namespace Bookingweb.DTOs
 
     public class UpdateDoctorRequest
     {
+        public string? full_name { get; set; }
+        public string? phone { get; set; }
         public int? specialty_id { get; set; }
         public string? description { get; set; }
         public int? experience_years { get; set; }
