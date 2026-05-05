@@ -107,7 +107,7 @@ const AdminDoctors = () => {
 
       {showForm && (
         <form className="glass-card fade-in" style={{ padding: '24px', marginBottom: '24px' }} onSubmit={handleSubmit} id="create-doctor-form">
-          <h3 style={{ marginBottom: '16px', fontSize: '1.1rem' }}>{editId ? 'Cập nhật thông tin Bác sĩ' : 'Tạo bác sĩ mới'}</h3>
+<h3 style={{ marginBottom: '16px', fontSize: '1.1rem' }}>{editId ? `Cập nhật thông tin: Bác sĩ ${form.full_name || '...'}` : 'Tạo bác sĩ mới'}</h3>
           <div className="admin-form-row">
             {!editId && (
               <>
