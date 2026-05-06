@@ -118,6 +118,20 @@ namespace Bookingweb.Services
             return true;
         }
 
+        public async Task<bool> PatientConfirmAppointment(Guid appointmentId, Guid userId)
+        {
+            var appt = await _context.appointments
+                .FirstOrDefaultAsync(a => a.id == appointmentId && a.user_id == userId);
+
+            if (appt == null) return false;
+            if (appt.Status != AppointmentStatus.SCHEDULED)
+                return false;
+
+            appt.Status = AppointmentStatus.PATIENT_CONFIRMED;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
         private static AppointmentDto MapToDto(appointment a)
         {
             return new AppointmentDto

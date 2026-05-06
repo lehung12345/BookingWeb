@@ -5,8 +5,10 @@ import { FiCalendar, FiClock, FiX } from 'react-icons/fi';
 import './MyAppointments.css';
 
 const statusMap = {
-  PENDING: { label: 'Chờ xác nhận', class: 'badge-pending' },
-  CONFIRMED: { label: 'Đã xác nhận', class: 'badge-confirmed' },
+  PENDING: { label: 'Chờ bác sĩ xác nhận', class: 'badge-pending' },
+  CONFIRMED: { label: 'Bác sĩ đã xác nhận', class: 'badge-confirmed' },
+  SCHEDULED: { label: 'Bác sĩ đã lên lịch', class: 'badge-confirmed' },
+  PATIENT_CONFIRMED: { label: 'Bệnh nhân đã xác nhận', class: 'badge-confirmed' },
   COMPLETED: { label: 'Hoàn thành', class: 'badge-completed' },
   CANCELLED: { label: 'Đã hủy', class: 'badge-cancelled' },
 };
@@ -37,6 +39,16 @@ const MyAppointments = () => {
     }
   };
 
+  const handleConfirm = async (id) => {
+    try {
+      await appointmentService.confirm(id);
+      toast.success('Xác nhận lịch thành công');
+      fetchAppointments();
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Lỗi xác nhận lịch');
+    }
+  };
+
   const filtered = filter === 'ALL' ? appointments : appointments.filter(a => a.status === filter);
 
   if (loading) {
@@ -49,7 +61,7 @@ const MyAppointments = () => {
       <p className="page-subtitle">Quản lý các lịch hẹn khám bệnh</p>
 
       <div className="appt-filters">
-        {['ALL', 'PENDING', 'CONFIRMED', 'COMPLETED', 'CANCELLED'].map(f => (
+        {['ALL', 'PENDING', 'CONFIRMED', 'SCHEDULED', 'PATIENT_CONFIRMED', 'COMPLETED', 'CANCELLED'].map(f => (
           <button
             key={f}
             className={`filter-chip ${filter === f ? 'active' : ''}`}
@@ -85,13 +97,23 @@ const MyAppointments = () => {
                 <span className={`badge ${statusMap[a.status]?.class}`}>
                   {statusMap[a.status]?.label}
                 </span>
-                {(a.status === 'PENDING' || a.status === 'CONFIRMED') && (
+                {(a.status === 'PENDING' || a.status === 'CONFIRMED' || a.status === 'SCHEDULED') && (
                   <button
                     className="btn-danger btn-sm"
                     onClick={() => handleCancel(a.id)}
                     id={`cancel-${a.id}`}
                   >
                     <FiX /> Hủy
+                  </button>
+                )}
+                {a.status === 'SCHEDULED' && (
+                  <button
+                    className="btn-success btn-sm"
+                    onClick={() => handleConfirm(a.id)}
+                    id={`confirm-${a.id}`}
+                    style={{ marginLeft: '8px' }}
+                  >
+                    Xác nhận
                   </button>
                 )}
               </div>

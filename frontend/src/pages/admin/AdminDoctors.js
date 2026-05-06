@@ -39,13 +39,15 @@ const AdminDoctors = () => {
       const payload = { ...form, specialty_id: form.specialty_id ? parseInt(form.specialty_id) : null };
       if (editId) {
         await adminService.updateDoctor(editId, {
+          full_name: payload.full_name,
+          phone: payload.phone,
           specialty_id: payload.specialty_id,
           description: payload.description,
           experience_years: payload.experience_years
         });
         toast.success('Cập nhật bác sĩ thành công');
       } else {
-        if (!form.full_name || !form.email || !form.password) {
+        if (!form.full_name?.trim() || !form.email?.trim() || !form.password?.trim()) {
           toast.error('Vui lòng điền đầy đủ thông tin bắt buộc');
           setCreating(false);
           return;
@@ -107,32 +109,45 @@ const AdminDoctors = () => {
 
       {showForm && (
         <form className="glass-card fade-in" style={{ padding: '24px', marginBottom: '24px' }} onSubmit={handleSubmit} id="create-doctor-form">
-          <h3 style={{ marginBottom: '16px', fontSize: '1.1rem' }}>{editId ? 'Cập nhật thông tin Bác sĩ' : 'Tạo bác sĩ mới'}</h3>
+<h3 style={{ marginBottom: '16px', fontSize: '1.1rem' }}>{editId ? `Cập nhật thông tin: Bác sĩ ${form.full_name || '...'}` : 'Tạo bác sĩ mới'}</h3>
           <div className="admin-form-row">
-            {!editId && (
+{(editId ? (
               <>
                 <div className="form-group">
                   <label className="label">Họ tên *</label>
                   <input className="input-field" placeholder="Nhập họ tên" value={form.full_name}
-                    onChange={(e) => setForm({ ...form, full_name: e.target.value })} />
+                    onChange={(e) => setForm({ ...form, full_name: e.target.value })} required />
+                </div>
+                <div className="form-group">
+                  <label className="label">SĐT</label>
+                  <input className="input-field" placeholder="Nhập SĐT" value={form.phone || ''}
+                    onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="form-group">
+                  <label className="label">Họ tên *</label>
+                  <input className="input-field" placeholder="Nhập họ tên" value={form.full_name}
+                    onChange={(e) => setForm({ ...form, full_name: e.target.value })} required />
                 </div>
                 <div className="form-group">
                   <label className="label">Email *</label>
                   <input className="input-field" type="email" placeholder="Nhập email" value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })} />
+                    onChange={(e) => setForm({ ...form, email: e.target.value })} required />
                 </div>
                 <div className="form-group">
                   <label className="label">Mật khẩu *</label>
                   <input className="input-field" type="password" placeholder="Nhập mật khẩu" value={form.password}
-                    onChange={(e) => setForm({ ...form, password: e.target.value })} />
+                    onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength="6" />
                 </div>
                 <div className="form-group">
                   <label className="label">SĐT</label>
-                  <input className="input-field" placeholder="Nhập SĐT" value={form.phone}
+                  <input className="input-field" placeholder="Nhập SĐT" value={form.phone || ''}
                     onChange={(e) => setForm({ ...form, phone: e.target.value })} />
                 </div>
               </>
-            )}
+            ))}
             <div className="form-group">
               <label className="label">Chuyên khoa</label>
               <select className="input-field" value={form.specialty_id}

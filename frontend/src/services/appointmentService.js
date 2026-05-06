@@ -6,4 +6,5 @@ export const appointmentService = {
   getDoctorAppointments: () => API.get('/appointments/doctor'),
   updateStatus: (id, data) => API.put(`/appointments/${id}/status`, data),
   cancel: (id) => API.put(`/appointments/${id}/cancel`),
+  confirm: (id) => API.put(`/appointments/${id}/confirm`),
 };
