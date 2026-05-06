@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { authService } from '../../services/authService';
+import { doctorService } from '../../services/doctorService';
 import { toast } from 'react-toastify';
 import { FiUser, FiMail, FiPhone, FiLock, FiCalendar, FiEdit2 } from 'react-icons/fi';
 import './Profile.css';
 
 const Profile = () => {
-  const { user } = useAuth();
+  const { user, isDoctor, isAdmin } = useAuth();
   const [loading, setLoading] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
   
@@ -14,6 +15,9 @@ const Profile = () => {
     full_name: '',
     phone: ''
   });
+
+  const [doctorDetails, setDoctorDetails] = useState(null);
+  const [doctorLoading, setDoctorLoading] = useState(false);
 
   const [passwordForm, setPasswordForm] = useState({
     current_password: '',
@@ -30,10 +34,31 @@ const Profile = () => {
     }
   }, [user]);
 
+  useEffect(() => {
+    const loadDoctorDetails = async () => {
+      if (!user || !isDoctor) return;
+      setDoctorLoading(true);
+      try {
+        const res = await doctorService.getMe();
+        setDoctorDetails(res.data);
+      } catch (err) {
+        console.error('Không lấy được thông tin bác sĩ:', err);
+      } finally {
+        setDoctorLoading(false);
+      }
+    };
+
+    loadDoctorDetails();
+  }, [user, isDoctor]);
+
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     if (!profileForm.full_name) {
       toast.error('Họ tên không được để trống');
+      return;
+    }
+    if (profileForm.phone && !/^0\d{9}$/.test(profileForm.phone)) {
+      toast.error('Số điện thoại phải là 10 chữ số và bắt đầu bằng 0');
       return;
     }
 
@@ -110,7 +135,9 @@ const Profile = () => {
             {user.full_name?.charAt(0).toUpperCase() || 'U'}
           </div>
           <h2 className="profile-name-sidebar">{user.full_name}</h2>
-          <span className="profile-role-badge">Tài khoản Bệnh nhân</span>
+          <span className="profile-role-badge">
+            {isDoctor ? 'Tài khoản Bác sĩ' : isAdmin ? 'Tài khoản Admin' : 'Tài khoản Bệnh nhân'}
+          </span>
           
           <div className="profile-info-list">
             <div className="info-item">
@@ -119,6 +146,16 @@ const Profile = () => {
             <div className="info-item">
               <FiPhone /> <span>{user.phone || 'Chưa cập nhật'}</span>
             </div>
+            {isDoctor && (
+              <>
+                <div className="info-item">
+                  <FiUser /> <span>{doctorLoading ? 'Đang tải chuyên khoa...' : doctorDetails?.specialty_name || 'Chưa có chuyên khoa'}</span>
+                </div>
+                <div className="info-item">
+                  <FiCalendar /> <span>{doctorLoading ? 'Đang tải...' : `${doctorDetails?.experience_years ?? 0} năm kinh nghiệm`}</span>
+                </div>
+              </>
+            )}
             <div className="info-item">
               <FiCalendar /> <span>Tham gia: {new Date(user.created_at || Date.now()).toLocaleDateString('vi-VN')}</span>
             </div>
@@ -144,11 +181,13 @@ const Profile = () => {
             <div className="form-group">
               <label className="label">Số điện thoại</label>
               <input 
-                type="text" 
+                type="tel" 
+                inputMode="tel"
+                maxLength="10"
                 className="input-field" 
                 value={profileForm.phone}
-                onChange={(e) => setProfileForm({...profileForm, phone: e.target.value})}
-                placeholder="Nhập số điện thoại"
+                onChange={(e) => setProfileForm({...profileForm, phone: e.target.value.replace(/\D/g, '')})}
+                placeholder="Nhập 10 chữ số, bắt đầu bằng 0"
               />
             </div>
             <button type="submit" className="btn-primary btn-profile-save" disabled={loading}>

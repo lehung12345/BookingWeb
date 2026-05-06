@@ -97,6 +97,11 @@ function AppRoutes() {
           <Navbar /><DoctorAppointments /><DoctorFooter />
         </ProtectedRoute>
       } />
+      <Route path="/doctor/profile" element={
+        <ProtectedRoute roles={['DOCTOR']}>
+          <Navbar /><Profile /><DoctorFooter />
+        </ProtectedRoute>
+      } />
 
       {/* Admin */}
       <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />

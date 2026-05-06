@@ -18,8 +18,8 @@ const Register = () => {
     if (!form.email.trim()) errs.email = 'Email không được để trống';
     else if (!/\S+@\S+\.\S+/.test(form.email)) errs.email = 'Email không hợp lệ';
     if (!form.password.trim()) errs.password = 'Mật khẩu không được để trống';
-    else if (form.password.length < 6) errs.password = 'Mật khẩu ít nhất 6 ký tự';
-    if (form.phone && !/^[0-9]{10,11}$/.test(form.phone)) errs.phone = 'Số điện thoại không hợp lệ (10-11 số)';
+    else if (!/^(?=.*[A-Za-z])(?=.*\d).{6,}$/.test(form.password)) errs.password = 'Mật khẩu phải ít nhất 6 ký tự và chứa cả chữ và số';
+    if (form.phone && !/^0\d{9}$/.test(form.phone)) errs.phone = 'Số điện thoại phải là 10 chữ số và bắt đầu bằng 0';
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -102,7 +102,7 @@ const Register = () => {
               <input
                 type="password"
                 className={`input-field input-with-icon ${errors.password ? 'input-error' : ''}`}
-                placeholder="Ít nhất 6 ký tự"
+                placeholder="Ít nhất 6 ký tự, chứa chữ và số"
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
                 id="register-password"
@@ -116,11 +116,13 @@ const Register = () => {
             <div className="input-wrapper">
               <FiPhone className="input-icon" />
               <input
-                type="text"
+                type="tel"
+                inputMode="tel"
+                maxLength="10"
                 className={`input-field input-with-icon ${errors.phone ? 'input-error' : ''}`}
-                placeholder="Nhập số điện thoại"
+                placeholder="Nhập 10 chữ số, bắt đầu bằng 0"
                 value={form.phone}
-                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, '') })}
                 id="register-phone"
               />
             </div>

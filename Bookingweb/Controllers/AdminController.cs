@@ -2,6 +2,7 @@ using Bookingweb.DTOs;
 using Bookingweb.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace Bookingweb.Controllers
 {
@@ -48,6 +49,15 @@ namespace Bookingweb.Controllers
         [HttpPost("doctors")]
         public async Task<IActionResult> CreateDoctor([FromBody] CreateDoctorRequest request)
         {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+                return BadRequest(new { error = string.Join(", ", errors) });
+            }
+
             var result = await _service.CreateDoctor(request);
 
             var type = result.GetType();

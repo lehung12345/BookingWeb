@@ -1,4 +1,5 @@
 using Bookingweb.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Bookingweb.DTOs
 {
@@ -15,6 +16,8 @@ namespace Bookingweb.DTOs
     public class UpdateProfileRequest
     {
         public string? full_name { get; set; }
+
+        [RegularExpression(@"^0\d{9}$", ErrorMessage = "Số điện thoại phải là 10 chữ số và bắt đầu bằng 0")]
         public string? phone { get; set; }
     }
 

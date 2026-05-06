@@ -139,10 +139,10 @@ const Navbar = () => {
 
               <ThemeToggleBtn />
 
-              <div className="nav-user">
+              <Link to="/doctor/profile" className="nav-user" title="Trang cá nhân">
                 <FiUser className="user-icon" />
                 <span>BS. {user?.full_name}</span>
-              </div>
+              </Link>
 
               <button onClick={handleLogout} className="btn-logout">
                 <FiLogOut />

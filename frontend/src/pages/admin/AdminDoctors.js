@@ -34,6 +34,14 @@ const AdminDoctors = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (form.phone && !/^0\d{9}$/.test(form.phone)) {
+      toast.error('Số điện thoại phải là 10 chữ số và bắt đầu bằng 0');
+      return;
+    }
+    if (!editId && !/^(?=.*[A-Za-z])(?=.*\d).{6,}$/.test(form.password)) {
+      toast.error('Mật khẩu phải ít nhất 6 ký tự và chứa cả chữ và số');
+      return;
+    }
     setCreating(true);
     try {
       const payload = { ...form, specialty_id: form.specialty_id ? parseInt(form.specialty_id) : null };
@@ -120,8 +128,8 @@ const AdminDoctors = () => {
                 </div>
                 <div className="form-group">
                   <label className="label">SĐT</label>
-                  <input className="input-field" placeholder="Nhập SĐT" value={form.phone || ''}
-                    onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+                  <input className="input-field" type="tel" inputMode="tel" maxLength="10" placeholder="Nhập 10 chữ số, bắt đầu bằng 0" value={form.phone || ''}
+                    onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, '') })} />
                 </div>
               </>
             ) : (
@@ -138,13 +146,13 @@ const AdminDoctors = () => {
                 </div>
                 <div className="form-group">
                   <label className="label">Mật khẩu *</label>
-                  <input className="input-field" type="password" placeholder="Nhập mật khẩu" value={form.password}
+                  <input className="input-field" type="password" placeholder="Ít nhất 6 ký tự, chứa chữ và số" value={form.password}
                     onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength="6" />
                 </div>
                 <div className="form-group">
                   <label className="label">SĐT</label>
-                  <input className="input-field" placeholder="Nhập SĐT" value={form.phone || ''}
-                    onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+                  <input className="input-field" type="tel" inputMode="tel" maxLength="10" placeholder="Nhập 10 chữ số, bắt đầu bằng 0" value={form.phone || ''}
+                    onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, '') })} />
                 </div>
               </>
             ))}
