@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { ToastContainer } from 'react-toastify';
@@ -45,6 +45,16 @@ const AuthRedirect = ({ children }) => {
 
   return children;
 };
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [pathname]);
+
+  return null;
+}
 
 function AppRoutes() {
   return (
@@ -128,6 +138,7 @@ function App() {
       <Router>
         <AuthProvider>
           <div className="App">
+            <ScrollToTop />
             <AppRoutes />
             <ThemedToast />
           </div>
