@@ -1,4 +1,4 @@
-﻿//namespace Bookingweb.Enums
+//namespace Bookingweb.Enums
 //{
 //    public enum AppointmentStatus
 //    {
@@ -28,6 +28,12 @@ namespace Bookingweb.Enums
         COMPLETED,
 
         [PgName("CANCELLED")]
-        CANCELLED
+        CANCELLED,
+
+        [PgName("SCHEDULED")]
+        SCHEDULED,
+
+        [PgName("PATIENT_CONFIRMED")]
+        PATIENT_CONFIRMED
     }
 }

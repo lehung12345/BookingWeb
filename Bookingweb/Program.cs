@@ -98,4 +98,19 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// Execute raw SQL to ensure Postgres enum has the new values
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    try
+    {
+        context.Database.ExecuteSqlRaw("ALTER TYPE appointment_status ADD VALUE IF NOT EXISTS 'SCHEDULED';");
+        context.Database.ExecuteSqlRaw("ALTER TYPE appointment_status ADD VALUE IF NOT EXISTS 'PATIENT_CONFIRMED';");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Could not update appointment_status enum: {ex.Message}");
+    }
+}
+
 app.Run();

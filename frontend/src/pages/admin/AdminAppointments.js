@@ -6,6 +6,9 @@ import './AdminPages.css';
 
 const statusLabels = {
   PENDING: 'Chờ xác nhận',
+  CONFIRMED: 'Đã xác nhận',
+  SCHEDULED: 'Đã lên lịch',
+  PATIENT_CONFIRMED: 'Bệnh nhân đã xác nhận',
   COMPLETED: 'Hoàn thành',
   CANCELLED: 'Đã hủy',
 };
@@ -31,7 +34,6 @@ const AdminAppointments = () => {
 
 
   const filtered = appointments
-    .filter(a => ['PENDING', 'COMPLETED', 'CANCELLED'].includes(a.status))
     .filter(a => filter === 'ALL' || a.status === filter)
     .filter(a =>
       a.patient_name?.toLowerCase().includes(search.toLowerCase()) ||
@@ -42,7 +44,7 @@ const AdminAppointments = () => {
 
   return (
     <div className="page-container fade-in">
-      <h1 className="page-title">Lịch hẹn (Chờ xác nhận, Hoàn thành, Đã hủy)</h1>
+      <h1 className="page-title">Quản lý lịch hẹn</h1>
       <p className="page-subtitle">Xem toàn bộ lịch hẹn trong hệ thống</p>
 
       <div className="search-box" style={{ marginBottom: '16px' }}>
@@ -52,9 +54,9 @@ const AdminAppointments = () => {
       </div>
 
       <div className="appt-filters" style={{ marginBottom: '20px' }}>
-        {['PENDING', 'COMPLETED', 'CANCELLED'].map(f => (
+        {['ALL', 'PENDING', 'CONFIRMED', 'SCHEDULED', 'PATIENT_CONFIRMED', 'COMPLETED', 'CANCELLED'].map(f => (
           <button key={f} className={`filter-chip ${filter === f ? 'active' : ''}`} onClick={() => setFilter(f)}>
-            {`${statusLabels[f]} (${appointments.filter(a => a.status === f).length})`}
+            {f === 'ALL' ? `Tất cả (${appointments.length})` : `${statusLabels[f]} (${appointments.filter(a => a.status === f).length})`}
           </button>
         ))}
       </div>
@@ -88,7 +90,7 @@ const AdminAppointments = () => {
                   </span>
                 </td>
                 <td>
-                  <span className={`badge ${a.status === 'PENDING' ? 'badge-pending' : a.status === 'COMPLETED' ? 'badge-completed' : 'badge-cancelled'}`}>
+                  <span className={`badge ${a.status === 'PENDING' ? 'badge-pending' : (a.status === 'CONFIRMED' || a.status === 'SCHEDULED' || a.status === 'PATIENT_CONFIRMED') ? 'badge-confirmed' : a.status === 'COMPLETED' ? 'badge-completed' : 'badge-cancelled'}`}>
                     {statusLabels[a.status]}
                   </span>
                 </td>

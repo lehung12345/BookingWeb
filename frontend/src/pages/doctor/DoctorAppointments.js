@@ -7,6 +7,8 @@ import './DoctorAppointments.css';
 const statusLabels = {
   PENDING: 'Chờ xác nhận',
   CONFIRMED: 'Đã xác nhận',
+  SCHEDULED: 'Đã lên lịch',
+  PATIENT_CONFIRMED: 'Bệnh nhân đã xác nhận',
   COMPLETED: 'Hoàn thành',
   CANCELLED: 'Đã hủy',
 };
@@ -15,7 +17,7 @@ const DoctorAppointments = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('ALL');
-  const [noteModal, setNoteModal] = useState(null);
+  const [actionModal, setActionModal] = useState({ id: null, type: null });
   const [noteText, setNoteText] = useState('');
 
   const fetch = () => {
@@ -33,19 +35,23 @@ const DoctorAppointments = () => {
       await appointmentService.updateStatus(id, { status, note });
       toast.success('Cập nhật thành công');
       fetch();
-      setNoteModal(null);
+      setActionModal({ id: null, type: null });
     } catch (err) {
       toast.error('Lỗi cập nhật');
     }
   };
 
-  const handleComplete = (id) => {
-    setNoteModal(id);
+  const openModal = (id, type) => {
+    setActionModal({ id, type });
     setNoteText('');
   };
 
-  const submitComplete = () => {
-    updateStatus(noteModal, 'COMPLETED', noteText || null);
+  const submitModal = () => {
+    if (actionModal.type === 'SCHEDULED') {
+      updateStatus(actionModal.id, 'SCHEDULED', noteText || null);
+    } else if (actionModal.type === 'COMPLETED') {
+      updateStatus(actionModal.id, 'COMPLETED', noteText || null);
+    }
   };
 
   const filtered = filter === 'ALL' ? appointments : appointments.filter(a => a.status === filter);
@@ -58,7 +64,7 @@ const DoctorAppointments = () => {
       <p className="page-subtitle">Xem và quản lý bệnh nhân đã đặt lịch</p>
 
       <div className="appt-filters">
-        {['ALL', 'PENDING', 'CONFIRMED', 'COMPLETED', 'CANCELLED'].map(f => (
+        {['ALL', 'PENDING', 'CONFIRMED', 'SCHEDULED', 'PATIENT_CONFIRMED', 'COMPLETED', 'CANCELLED'].map(f => (
           <button key={f} className={`filter-chip ${filter === f ? 'active' : ''}`} onClick={() => setFilter(f)}>
             {f === 'ALL' ? `Tất cả (${appointments.length})` : `${statusLabels[f]} (${appointments.filter(a => a.status === f).length})`}
           </button>
@@ -86,7 +92,7 @@ const DoctorAppointments = () => {
               </div>
 
               <div className="da-status">
-                <span className={`badge ${a.status === 'PENDING' ? 'badge-pending' : a.status === 'CONFIRMED' ? 'badge-confirmed' : a.status === 'COMPLETED' ? 'badge-completed' : 'badge-cancelled'}`}>
+                <span className={`badge ${a.status === 'PENDING' ? 'badge-pending' : (a.status === 'CONFIRMED' || a.status === 'SCHEDULED' || a.status === 'PATIENT_CONFIRMED') ? 'badge-confirmed' : a.status === 'COMPLETED' ? 'badge-completed' : 'badge-cancelled'}`}>
                   {statusLabels[a.status]}
                 </span>
                 {a.note && <p className="da-note">📝 {a.note}</p>}
@@ -104,8 +110,13 @@ const DoctorAppointments = () => {
                   </>
                 )}
                 {a.status === 'CONFIRMED' && (
-                  <button className="btn-primary btn-sm" onClick={() => handleComplete(a.id)}>
-                    <FiCheckCircle /> Lên lịch hẹn 
+                  <button className="btn-primary btn-sm" onClick={() => openModal(a.id, 'SCHEDULED')}>
+                    <FiCalendar /> Lên lịch hẹn 
+                  </button>
+                )}
+                {(a.status === 'SCHEDULED' || a.status === 'PATIENT_CONFIRMED') && (
+                  <button className="btn-success btn-sm" onClick={() => openModal(a.id, 'COMPLETED')}>
+                    <FiCheckCircle /> Hoàn thành
                   </button>
                 )}
               </div>
@@ -115,26 +126,30 @@ const DoctorAppointments = () => {
       )}
 
       {/* Note Modal */}
-      {noteModal && (
-        <div className="modal-overlay" onClick={() => setNoteModal(null)}>
+      {actionModal.id && (
+        <div className="modal-overlay" onClick={() => setActionModal({ id: null, type: null })}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <h3 className="modal-title">Lên lịch hẹn với bệnh nhân</h3>
+            <h3 className="modal-title">
+              {actionModal.type === 'SCHEDULED' ? 'Ghi chú lên lịch hẹn' : 'Hoàn thành lịch hẹn'}
+            </h3>
             <div className="form-group">
-              <label className="label">Chẩn đoán / Ghi chú (tuỳ chọn)</label>
+              <label className="label">
+                {actionModal.type === 'SCHEDULED' ? 'Ghi chú cho bệnh nhân (tuỳ chọn)' : 'Chẩn đoán / Ghi chú (tuỳ chọn)'}
+              </label>
               <textarea
                 className="input-field"
                 rows="4"
-                placeholder="Nhập chẩn đoán..."
+                placeholder={actionModal.type === 'SCHEDULED' ? 'Nhập ghi chú hoặc thời gian cụ thể...' : 'Nhập chẩn đoán...'}
                 value={noteText}
                 onChange={(e) => setNoteText(e.target.value)}
                 id="diagnosis-note"
               />
             </div>
             <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
-              <button className="btn-primary" onClick={submitComplete} style={{ flex: 1 }}>
-                <FiCheckCircle /> Xác nhận hoàn thành
+              <button className={actionModal.type === 'SCHEDULED' ? 'btn-primary' : 'btn-success'} onClick={submitModal} style={{ flex: 1 }}>
+                {actionModal.type === 'SCHEDULED' ? <><FiCalendar /> Xác nhận lên lịch</> : <><FiCheckCircle /> Xác nhận hoàn thành</>}
               </button>
-              <button className="btn-secondary" onClick={() => setNoteModal(null)}>Hủy</button>
+              <button className="btn-secondary" onClick={() => setActionModal({ id: null, type: null })}>Hủy</button>
             </div>
           </div>
         </div>

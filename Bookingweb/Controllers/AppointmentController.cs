@@ -98,5 +98,19 @@ namespace Bookingweb.Controllers
 
             return Ok(new { message = "Hủy lịch thành công" });
         }
+
+        // ✅ CONFIRM APPOINTMENT (user)
+        [HttpPut("{id}/confirm")]
+        [Authorize(Roles = "USER")]
+        public async Task<IActionResult> Confirm(Guid id)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null) return Unauthorized();
+
+            var result = await _service.PatientConfirmAppointment(id, Guid.Parse(userId));
+            if (!result) return BadRequest(new { error = "Không thể xác nhận lịch hẹn này" });
+
+            return Ok(new { message = "Xác nhận thành công" });
+        }
     }
 }
