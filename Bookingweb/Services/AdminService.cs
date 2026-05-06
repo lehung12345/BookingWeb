@@ -124,8 +124,8 @@ namespace Bookingweb.Services
 
             if (!string.IsNullOrEmpty(request.full_name))
                 doc.user.full_name = request.full_name;
-            if (!string.IsNullOrEmpty(request.phone))
-                doc.phone = request.phone;
+if (!string.IsNullOrEmpty(request.phone))
+                doc.user.phone = request.phone;
             if (request.specialty_id.HasValue)
                 doc.specialty_id = request.specialty_id;
             if (request.description != null)

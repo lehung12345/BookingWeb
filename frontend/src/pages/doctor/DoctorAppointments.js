@@ -105,7 +105,7 @@ const DoctorAppointments = () => {
                 )}
                 {a.status === 'CONFIRMED' && (
                   <button className="btn-primary btn-sm" onClick={() => handleComplete(a.id)}>
-                    <FiCheckCircle /> Hoàn thành
+                    <FiCheckCircle /> Lên lịch hẹn 
                   </button>
                 )}
               </div>
@@ -118,7 +118,7 @@ const DoctorAppointments = () => {
       {noteModal && (
         <div className="modal-overlay" onClick={() => setNoteModal(null)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <h3 className="modal-title">Ghi chú chẩn đoán</h3>
+            <h3 className="modal-title">Lên lịch hẹn với bệnh nhân</h3>
             <div className="form-group">
               <label className="label">Chẩn đoán / Ghi chú (tuỳ chọn)</label>
               <textarea

@@ -6,7 +6,6 @@ import './AdminPages.css';
 
 const statusLabels = {
   PENDING: 'Chờ xác nhận',
-  CONFIRMED: 'Đã xác nhận',
   COMPLETED: 'Hoàn thành',
   CANCELLED: 'Đã hủy',
 };
@@ -29,18 +28,10 @@ const AdminAppointments = () => {
     fetchAppointments();
   }, []);
 
-  const handleStatusChange = async (id, newStatus) => {
-    if (!window.confirm(`Xác nhận đổi trạng thái thành ${statusLabels[newStatus]}?`)) return;
-    try {
-      await adminService.updateAppointmentStatus(id, newStatus);
-      toast.success('Cập nhật trạng thái thành công');
-      fetchAppointments();
-    } catch {
-      toast.error('Lỗi cập nhật trạng thái');
-    }
-  };
+
 
   const filtered = appointments
+    .filter(a => ['PENDING', 'COMPLETED', 'CANCELLED'].includes(a.status))
     .filter(a => filter === 'ALL' || a.status === filter)
     .filter(a =>
       a.patient_name?.toLowerCase().includes(search.toLowerCase()) ||
@@ -51,7 +42,7 @@ const AdminAppointments = () => {
 
   return (
     <div className="page-container fade-in">
-      <h1 className="page-title">Tất cả lịch hẹn</h1>
+      <h1 className="page-title">Lịch hẹn (Chờ xác nhận, Hoàn thành, Đã hủy)</h1>
       <p className="page-subtitle">Xem toàn bộ lịch hẹn trong hệ thống</p>
 
       <div className="search-box" style={{ marginBottom: '16px' }}>
@@ -61,9 +52,9 @@ const AdminAppointments = () => {
       </div>
 
       <div className="appt-filters" style={{ marginBottom: '20px' }}>
-        {['ALL', 'PENDING', 'CONFIRMED', 'COMPLETED', 'CANCELLED'].map(f => (
+        {['PENDING', 'COMPLETED', 'CANCELLED'].map(f => (
           <button key={f} className={`filter-chip ${filter === f ? 'active' : ''}`} onClick={() => setFilter(f)}>
-            {f === 'ALL' ? `Tất cả (${appointments.length})` : `${statusLabels[f]} (${appointments.filter(a => a.status === f).length})`}
+            {`${statusLabels[f]} (${appointments.filter(a => a.status === f).length})`}
           </button>
         ))}
       </div>
@@ -78,7 +69,6 @@ const AdminAppointments = () => {
               <th>Ngày</th>
               <th>Giờ</th>
               <th>Trạng thái</th>
-              <th>Thao tác</th>
             </tr>
           </thead>
           <tbody>
@@ -98,21 +88,9 @@ const AdminAppointments = () => {
                   </span>
                 </td>
                 <td>
-                  <span className={`badge ${a.status === 'PENDING' ? 'badge-pending' : a.status === 'CONFIRMED' ? 'badge-confirmed' : a.status === 'COMPLETED' ? 'badge-completed' : 'badge-cancelled'}`}>
+                  <span className={`badge ${a.status === 'PENDING' ? 'badge-pending' : a.status === 'COMPLETED' ? 'badge-completed' : 'badge-cancelled'}`}>
                     {statusLabels[a.status]}
                   </span>
-                  {a.status === 'PENDING' && (
-                    <div style={{ display: 'flex', gap: '4px', marginTop: '6px' }}>
-                      <button className="btn-success btn-sm" onClick={() => handleStatusChange(a.id, 'CONFIRMED')}>Xác nhận</button>
-                      <button className="btn-danger btn-sm" onClick={() => handleStatusChange(a.id, 'CANCELLED')}>Hủy</button>
-                    </div>
-                  )}
-                  {a.status === 'CONFIRMED' && (
-                    <div style={{ display: 'flex', gap: '4px', marginTop: '6px' }}>
-                      <button className="btn-success btn-sm" onClick={() => handleStatusChange(a.id, 'COMPLETED')}>Hoàn thành</button>
-                      <button className="btn-danger btn-sm" onClick={() => handleStatusChange(a.id, 'CANCELLED')}>Hủy</button>
-                    </div>
-                  )}
                 </td>
               </tr>
             ))}
