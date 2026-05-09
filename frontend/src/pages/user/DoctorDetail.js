@@ -85,7 +85,11 @@ const DoctorDetail = () => {
         <div className="dd-info glass-card">
           <div className="dd-header">
             <div className="dd-avatar">
-              {doctor.full_name?.charAt(0) || 'D'}
+              {doctor.avatar_url ? (
+                <img src={doctor.avatar_url} alt={doctor.full_name} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+              ) : (
+                doctor.full_name?.charAt(0) || 'D'
+              )}
             </div>
             <div>
               <h1 className="dd-name">BS. {doctor.full_name}</h1>

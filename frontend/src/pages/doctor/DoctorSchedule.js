@@ -24,6 +24,21 @@ const DoctorSchedule = () => {
   const [form, setForm] = useState({ work_date: '', start_time: '', end_time: '' });
   const [creating, setCreating] = useState(false);
 
+  // Helper: format date to YYYY-MM-DD
+  const formatDate = (date) => {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  };
+
+  // Get today and tomorrow dates
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const todayStr = formatDate(today);
+  const tomorrowStr = formatDate(tomorrow);
+
   const fetchSchedules = () => {
     setLoading(true);
     scheduleService.getMySchedules()
@@ -38,6 +53,16 @@ const DoctorSchedule = () => {
     e.preventDefault();
     if (!form.work_date || !form.start_time || !form.end_time) {
       toast.error('Vui lòng điền đầy đủ thông tin');
+      return;
+    }
+    // Validate: only allow today and tomorrow
+    if (form.work_date !== todayStr && form.work_date !== tomorrowStr) {
+      toast.error('Chỉ được tạo lịch cho hôm nay và ngày mai');
+      return;
+    }
+    // Validate: only one schedule per day
+    if (schedules.some(s => s.work_date === form.work_date)) {
+      toast.error('Ngày này đã có lịch rồi, chỉ được tạo một lịch cho mỗi ngày');
       return;
     }
     setCreating(true);
@@ -101,8 +126,15 @@ const DoctorSchedule = () => {
           <div className="sf-row">
             <div className="form-group">
               <label className="label"><FiCalendar /> Ngày</label>
-              <input type="date" className="input-field" value={form.work_date}
-                onChange={(e) => setForm({ ...form, work_date: e.target.value })} id="schedule-date" />
+              <input 
+                type="date" 
+                className="input-field" 
+                value={form.work_date}
+                min={todayStr}
+                max={tomorrowStr}
+                onChange={(e) => setForm({ ...form, work_date: e.target.value })} 
+                id="schedule-date" 
+              />
             </div>
             <div className="form-group">
               <label className="label"><FiClock /> Giờ bắt đầu</label>
