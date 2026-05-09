@@ -87,9 +87,9 @@ const Footer = () => {
           <p className="copyright">
             © {new Date().getFullYear()} MediBook Vietnam. All Rights Reserved.
           </p>
-          <div className="footer-bottom-links">
+          {/* <div className="footer-bottom-links">
             <span className="newsletter-text" style={{marginRight: '15px'}}>Ngôn ngữ: Tiếng Việt</span>
-          </div>
+          </div> */}
         </div>
       </div>
     </footer>
