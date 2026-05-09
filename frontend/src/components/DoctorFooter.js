@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FiHeart, FiMail, FiPhone, FiMapPin, FiSettings, FiExternalLink, FiBookOpen, FiShield, FiSend } from 'react-icons/fi';
+import { FiHeart, FiMail, FiPhone, FiSettings, FiExternalLink, FiBookOpen, FiShield, FiSend } from 'react-icons/fi';
 import './Footer.css'; // Reusing the same styling
 
 const DoctorFooter = () => {
@@ -30,7 +30,7 @@ const DoctorFooter = () => {
               <li className="footer-link-item"><Link to="/doctor/dashboard">Bảng điều khiển</Link></li>
               <li className="footer-link-item"><Link to="/doctor/schedule">Lịch làm việc</Link></li>
               <li className="footer-link-item"><Link to="/doctor/appointments">Danh sách bệnh nhân</Link></li>
-              <li className="footer-link-item"><a href="#">Báo cáo thống kê</a></li>
+              <li className="footer-link-item"><a href="/doctor/reports">Báo cáo thống kê</a></li>
             </ul>
           </div>
 
@@ -38,10 +38,10 @@ const DoctorFooter = () => {
           <div className="footer-column">
             <h4 className="footer-heading">Tài nguyên</h4>
             <ul className="footer-links">
-              <li className="footer-link-item"><a href="#"><FiBookOpen /> Hướng dẫn lâm sàng</a></li>
-              <li className="footer-link-item"><a href="#"><FiShield /> Quy định y tế</a></li>
-              <li className="footer-link-item"><a href="#"><FiExternalLink /> Cộng đồng bác sĩ</a></li>
-              <li className="footer-link-item"><a href="#">Tài liệu đào tạo</a></li>
+              <li className="footer-link-item"><a href="/doctor/guide"><FiBookOpen /> Hướng dẫn lâm sàng</a></li>
+              <li className="footer-link-item"><a href="/doctor/policy"><FiShield /> Quy định y tế</a></li>
+              <li className="footer-link-item"><a href="/doctor/community"><FiExternalLink /> Cộng đồng bác sĩ</a></li>
+              <li className="footer-link-item"><a href="/doctor/training">Tài liệu đào tạo</a></li>
             </ul>
           </div>
 

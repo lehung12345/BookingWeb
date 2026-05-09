@@ -7,7 +7,7 @@ import { useAuth } from '../../context/AuthContext';
 import './Home.css';
 
 const Home = () => {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [specialties, setSpecialties] = useState([]);
   const [doctors, setDoctors] = useState([]);
 

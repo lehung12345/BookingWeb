@@ -6,7 +6,7 @@
 
 .profile-layout {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 300px minmax(340px, 1.2fr) 1fr;
   gap: 20px;
   align-items: start;
 }
@@ -110,10 +110,11 @@
   font-size: 1.15rem;
   font-weight: 600;
   margin-bottom: 20px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 10px;
   color: white;
+  white-space: nowrap;
 }
 
 .section-title svg {

@@ -19,10 +19,10 @@ const Footer = () => {
               Nền tảng đặt lịch khám số 1 Việt Nam. Chúng tôi kết nối hàng triệu bệnh nhân với hàng ngàn bác sĩ uy tín trên toàn quốc, mang lại trải nghiệm chăm sóc sức khỏe hiện đại và dễ dàng.
             </p>
             <div className="social-links">
-              <a href="#" className="social-icon" aria-label="Facebook"><FiFacebook /></a>
-              <a href="#" className="social-icon" aria-label="Instagram"><FiInstagram /></a>
-              <a href="#" className="social-icon" aria-label="Youtube"><FiYoutube /></a>
-              <a href="#" className="social-icon" aria-label="Twitter"><FiTwitter /></a>
+              <a href="https://www.facebook.com" className="social-icon" aria-label="Facebook"><FiFacebook /></a>
+              <a href="https://www.instagram.com" className="social-icon" aria-label="Instagram"><FiInstagram /></a>
+              <a href="https://www.youtube.com" className="social-icon" aria-label="Youtube"><FiYoutube /></a>
+              <a href="https://www.twitter.com" className="social-icon" aria-label="Twitter"><FiTwitter /></a>
             </div>
           </div>
 
@@ -32,9 +32,9 @@ const Footer = () => {
             <ul className="footer-links">
               <li className="footer-link-item"><Link to="/">Trang chủ</Link></li>
               <li className="footer-link-item"><Link to="/doctors">Danh sách bác sĩ</Link></li>
-              <li className="footer-link-item"><a href="#">Chuyên khoa</a></li>
-              <li className="footer-link-item"><a href="#">Cơ sở y tế</a></li>
-              <li className="footer-link-item"><a href="#">Phòng khám</a></li>
+              <li className="footer-link-item"><a href="/specialties">Chuyên khoa</a></li>
+              <li className="footer-link-item"><a href="/facilities">Cơ sở y tế</a></li>
+              <li className="footer-link-item"><a href="/clinics">Phòng khám</a></li>
             </ul>
           </div>
 
@@ -42,11 +42,11 @@ const Footer = () => {
           <div className="footer-column">
             <h4 className="footer-heading">Hỗ trợ</h4>
             <ul className="footer-links">
-              <li className="footer-link-item"><a href="#">Câu hỏi thường gặp</a></li>
-              <li className="footer-link-item"><a href="#">Chính sách bảo mật</a></li>
-              <li className="footer-link-item"><a href="#">Điều khoản sử dụng</a></li>
-              <li className="footer-link-item"><a href="#">Quy trình đặt lịch</a></li>
-              <li className="footer-link-item"><a href="#">Liên hệ hỗ trợ</a></li>
+              <li className="footer-link-item"><a href="/faq">Câu hỏi thường gặp</a></li>
+              <li className="footer-link-item"><a href="/privacy">Chính sách bảo mật</a></li>
+              <li className="footer-link-item"><a href="/terms">Điều khoản sử dụng</a></li>
+              <li className="footer-link-item"><a href="/booking-process">Quy trình đặt lịch</a></li>
+              <li className="footer-link-item"><a href="/support">Liên hệ hỗ trợ</a></li>
             </ul>
           </div>
 
