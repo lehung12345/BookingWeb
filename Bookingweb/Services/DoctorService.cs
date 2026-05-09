@@ -28,7 +28,9 @@ namespace Bookingweb.Services
                     specialty_id = d.specialty_id,
                     specialty_name = d.specialty != null ? d.specialty.name : null,
                     description = d.description,
-                    experience_years = d.experience_years
+                    experience_years = d.experience_years,
+                    avatar_url = d.avatar_url,
+                    address = d.address
                 })
                 .ToListAsync();
         }
@@ -49,7 +51,9 @@ namespace Bookingweb.Services
                     specialty_id = d.specialty_id,
                     specialty_name = d.specialty != null ? d.specialty.name : null,
                     description = d.description,
-                    experience_years = d.experience_years
+                    experience_years = d.experience_years,
+                    avatar_url = d.avatar_url,
+                    address = d.address
                 })
                 .FirstOrDefaultAsync();
         }
@@ -70,7 +74,9 @@ namespace Bookingweb.Services
                     specialty_id = d.specialty_id,
                     specialty_name = d.specialty != null ? d.specialty.name : null,
                     description = d.description,
-                    experience_years = d.experience_years
+                    experience_years = d.experience_years,
+                    avatar_url = d.avatar_url,
+                    address = d.address
                 })
                 .FirstOrDefaultAsync();
         }
@@ -91,7 +97,9 @@ namespace Bookingweb.Services
                     specialty_id = d.specialty_id,
                     specialty_name = d.specialty != null ? d.specialty.name : null,
                     description = d.description,
-                    experience_years = d.experience_years
+                    experience_years = d.experience_years,
+                    avatar_url = d.avatar_url,
+                    address = d.address
                 })
                 .ToListAsync();
         }

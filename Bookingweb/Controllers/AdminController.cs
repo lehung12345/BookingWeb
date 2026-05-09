@@ -47,7 +47,7 @@ namespace Bookingweb.Controllers
 
         // ➕ CREATE DOCTOR
         [HttpPost("doctors")]
-        public async Task<IActionResult> CreateDoctor([FromBody] CreateDoctorRequest request)
+        public async Task<IActionResult> CreateDoctor([FromForm] CreateDoctorRequest request, IFormFile? avatar)
         {
             if (!ModelState.IsValid)
             {
@@ -58,7 +58,7 @@ namespace Bookingweb.Controllers
                 return BadRequest(new { error = string.Join(", ", errors) });
             }
 
-            var result = await _service.CreateDoctor(request);
+            var result = await _service.CreateDoctor(request, avatar);
 
             var type = result.GetType();
             var errorProp = type.GetProperty("error");
@@ -73,9 +73,9 @@ namespace Bookingweb.Controllers
 
         // ✏️ UPDATE DOCTOR
         [HttpPut("doctors/{id}")]
-        public async Task<IActionResult> UpdateDoctor(Guid id, [FromBody] UpdateDoctorRequest request)
+        public async Task<IActionResult> UpdateDoctor(Guid id, [FromForm] UpdateDoctorRequest request, IFormFile? avatar)
         {
-            var result = await _service.UpdateDoctor(id, request);
+            var result = await _service.UpdateDoctor(id, request, avatar);
             if (!result) return NotFound(new { error = "Không tìm thấy bác sĩ" });
             return Ok(new { message = "Cập nhật thành công" });
         }

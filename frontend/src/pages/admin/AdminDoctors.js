@@ -15,8 +15,9 @@ const AdminDoctors = () => {
   const [editId, setEditId] = useState(null);
   const [form, setForm] = useState({
     full_name: '', email: '', password: '', phone: '',
-    specialty_id: '', description: '', experience_years: 0
+    specialty_id: '', description: '', experience_years: 0, address: ''
   });
+  const [avatarFile, setAvatarFile] = useState(null);
   const [creating, setCreating] = useState(false);
 
   const fetchDoctors = () => {
@@ -51,8 +52,9 @@ const AdminDoctors = () => {
           phone: payload.phone,
           specialty_id: payload.specialty_id,
           description: payload.description,
-          experience_years: payload.experience_years
-        });
+          experience_years: payload.experience_years,
+          address: payload.address
+        }, avatarFile);
         toast.success('Cập nhật bác sĩ thành công');
       } else {
         if (!form.full_name?.trim() || !form.email?.trim() || !form.password?.trim()) {
@@ -60,7 +62,7 @@ const AdminDoctors = () => {
           setCreating(false);
           return;
         }
-        await adminService.createDoctor(payload);
+        await adminService.createDoctor(payload, avatarFile);
         toast.success('Tạo bác sĩ thành công');
       }
       resetForm();
@@ -73,7 +75,8 @@ const AdminDoctors = () => {
   };
 
   const resetForm = () => {
-    setForm({ full_name: '', email: '', password: '', phone: '', specialty_id: '', description: '', experience_years: 0 });
+    setForm({ full_name: '', email: '', password: '', phone: '', specialty_id: '', description: '', experience_years: 0, address: '' });
+    setAvatarFile(null);
     setEditId(null);
     setShowForm(false);
   };
@@ -81,8 +84,10 @@ const AdminDoctors = () => {
   const handleEditClick = (d) => {
     setForm({
       full_name: d.full_name, email: d.email, password: '', phone: d.phone,
-      specialty_id: d.specialty_id || '', description: d.description || '', experience_years: d.experience_years || 0
+      specialty_id: d.specialty_id || '', description: d.description || '', experience_years: d.experience_years || 0,
+      address: d.address || ''
     });
+    setAvatarFile(null); // Reset avatar file for edit
     setEditId(d.id);
     setShowForm(true);
   };
@@ -131,6 +136,16 @@ const AdminDoctors = () => {
                   <input className="input-field" type="tel" inputMode="tel" maxLength="10" placeholder="Nhập 10 chữ số, bắt đầu bằng 0" value={form.phone || ''}
                     onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, '') })} />
                 </div>
+                <div className="form-group">
+                  <label className="label">Địa chỉ</label>
+                  <input className="input-field" placeholder="Nhập địa chỉ" value={form.address}
+                    onChange={(e) => setForm({ ...form, address: e.target.value })} />
+                </div>
+                <div className="form-group">
+                  <label className="label">Ảnh đại diện</label>
+                  <input className="input-field" type="file" accept="image/*"
+                    onChange={(e) => setAvatarFile(e.target.files[0])} />
+                </div>
               </>
             ) : (
               <>
@@ -168,6 +183,16 @@ const AdminDoctors = () => {
               <label className="label">Năm kinh nghiệm</label>
               <input className="input-field" type="number" min="0" value={form.experience_years}
                 onChange={(e) => setForm({ ...form, experience_years: parseInt(e.target.value) || 0 })} />
+            </div>
+            <div className="form-group">
+              <label className="label">Địa chỉ</label>
+              <input className="input-field" placeholder="Nhập địa chỉ" value={form.address}
+                onChange={(e) => setForm({ ...form, address: e.target.value })} />
+            </div>
+            <div className="form-group">
+              <label className="label">Ảnh đại diện</label>
+              <input className="input-field" type="file" accept="image/*"
+                onChange={(e) => setAvatarFile(e.target.files[0])} />
             </div>
           </div>
           <div className="form-group" style={{ marginTop: '16px' }}>

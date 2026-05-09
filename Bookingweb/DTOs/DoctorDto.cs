@@ -13,6 +13,8 @@ namespace Bookingweb.DTOs
         public string? specialty_name { get; set; }
         public string? description { get; set; }
         public int? experience_years { get; set; }
+        public string? avatar_url { get; set; }
+        public string? address { get; set; }
     }
 
     public class CreateDoctorRequest
@@ -29,6 +31,7 @@ namespace Bookingweb.DTOs
         public int? specialty_id { get; set; }
         public string? description { get; set; }
         public int? experience_years { get; set; }
+        public string? address { get; set; }
     }
 
     public class UpdateDoctorRequest
@@ -40,5 +43,7 @@ namespace Bookingweb.DTOs
         public int? specialty_id { get; set; }
         public string? description { get; set; }
         public int? experience_years { get; set; }
+        public string? avatar_url { get; set; }
+        public string? address { get; set; }
     }
 }

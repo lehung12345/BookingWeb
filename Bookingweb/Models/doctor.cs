@@ -15,6 +15,10 @@ public partial class doctor
 
     public int? experience_years { get; set; }
 
+    public string? avatar_url { get; set; }
+
+    public string? address { get; set; }
+
     public virtual ICollection<appointment> appointments { get; set; } = new List<appointment>();
 
     public virtual ICollection<schedule> schedules { get; set; } = new List<schedule>();
