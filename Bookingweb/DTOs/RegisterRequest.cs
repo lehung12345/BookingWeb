@@ -15,9 +15,10 @@ namespace Bookingweb.DTOs
 
         [Required(ErrorMessage = "Mật khẩu không được để trống")]
         [MinLength(6, ErrorMessage = "Mật khẩu phải có ít nhất 6 ký tự")]
+        [RegularExpression(@"^(?=.*[A-Za-z])(?=.*\d).{6,}$", ErrorMessage = "Mật khẩu phải ít nhất 6 ký tự và chứa cả chữ và số")]
         public string password { get; set; } = null!;
 
-        [MaxLength(20)]
+        [RegularExpression(@"^0\d{9}$", ErrorMessage = "Số điện thoại phải là 10 chữ số và bắt đầu bằng 0")]
         public string? phone { get; set; }
     }
 }

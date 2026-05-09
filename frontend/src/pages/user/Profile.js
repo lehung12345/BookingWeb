@@ -1,19 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { authService } from '../../services/authService';
+import { doctorService } from '../../services/doctorService';
 import { toast } from 'react-toastify';
-import { FiUser, FiMail, FiPhone, FiLock, FiCalendar, FiEdit2 } from 'react-icons/fi';
+import { FiUser, FiMail, FiPhone, FiLock, FiCalendar, FiEdit2, FiMapPin } from 'react-icons/fi';
 import './Profile.css';
 
 const Profile = () => {
-  const { user } = useAuth();
+  const { user, isDoctor, isAdmin } = useAuth();
   const [loading, setLoading] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
   
   const [profileForm, setProfileForm] = useState({
     full_name: '',
-    phone: ''
+    phone: '',
+    address: ''
   });
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [previewAvatar, setPreviewAvatar] = useState(null);
+
+  const [doctorDetails, setDoctorDetails] = useState(null);
+  const [doctorLoading, setDoctorLoading] = useState(false);
 
   const [passwordForm, setPasswordForm] = useState({
     current_password: '',
@@ -23,12 +30,40 @@ const Profile = () => {
 
   useEffect(() => {
     if (user) {
-      setProfileForm({
+      setProfileForm(prev => ({
+        ...prev,
         full_name: user.full_name || '',
         phone: user.phone || ''
-      });
+      }));
     }
   }, [user]);
+
+  useEffect(() => {
+    if (doctorDetails) {
+      setProfileForm(prev => ({
+        ...prev,
+        address: doctorDetails.address || ''
+      }));
+      setPreviewAvatar(doctorDetails.avatar_url || null);
+    }
+  }, [doctorDetails]);
+
+  useEffect(() => {
+    const loadDoctorDetails = async () => {
+      if (!user || !isDoctor) return;
+      setDoctorLoading(true);
+      try {
+        const res = await doctorService.getMe();
+        setDoctorDetails(res.data);
+      } catch (err) {
+        console.error('Không lấy được thông tin bác sĩ:', err);
+      } finally {
+        setDoctorLoading(false);
+      }
+    };
+
+    loadDoctorDetails();
+  }, [user, isDoctor]);
 
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
@@ -36,18 +71,31 @@ const Profile = () => {
       toast.error('Họ tên không được để trống');
       return;
     }
+    if (profileForm.phone && !/^0\d{9}$/.test(profileForm.phone)) {
+      toast.error('Số điện thoại phải là 10 chữ số và bắt đầu bằng 0');
+      return;
+    }
 
     setLoading(true);
     try {
-      await authService.updateProfile({ 
-        full_name: profileForm.full_name,
-        phone: profileForm.phone 
-      });
-      
-      const updatedUser = { ...user, ...profileForm };
-      const authData = JSON.parse(localStorage.getItem('auth_data'));
-      localStorage.setItem('auth_data', JSON.stringify({ ...authData, user: updatedUser }));
-      
+      if (isDoctor) {
+        const formData = new FormData();
+        formData.append('full_name', profileForm.full_name);
+        formData.append('phone', profileForm.phone || '');
+        formData.append('address', profileForm.address || '');
+        if (avatarFile) {
+          formData.append('avatar', avatarFile);
+        }
+        await doctorService.updateProfile(formData);
+      } else {
+        await authService.updateProfile({
+          full_name: profileForm.full_name,
+          phone: profileForm.phone
+        });
+      }
+
+      const updatedUser = { ...user, full_name: profileForm.full_name, phone: profileForm.phone };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
       toast.success('Cập nhật thông tin thành công');
       setTimeout(() => window.location.reload(), 1000);
     } catch (err) {
@@ -107,10 +155,16 @@ const Profile = () => {
         {/* Column 1: Info Sidebar */}
         <div className="profile-sidebar glass-card profile-section">
           <div className="profile-avatar-large">
-            {user.full_name?.charAt(0).toUpperCase() || 'U'}
+            {previewAvatar ? (
+              <img src={previewAvatar} alt="Avatar bác sĩ" className="profile-avatar-img" />
+            ) : (
+              user.full_name?.charAt(0).toUpperCase() || 'U'
+            )}
           </div>
           <h2 className="profile-name-sidebar">{user.full_name}</h2>
-          <span className="profile-role-badge">Tài khoản Bệnh nhân</span>
+          <span className="profile-role-badge">
+            {isDoctor ? 'Tài khoản Bác sĩ' : isAdmin ? 'Tài khoản Admin' : 'Tài khoản Bệnh nhân'}
+          </span>
           
           <div className="profile-info-list">
             <div className="info-item">
@@ -119,6 +173,19 @@ const Profile = () => {
             <div className="info-item">
               <FiPhone /> <span>{user.phone || 'Chưa cập nhật'}</span>
             </div>
+            {isDoctor && (
+              <>
+                <div className="info-item">
+                  <FiUser /> <span>{doctorLoading ? 'Đang tải chuyên khoa...' : doctorDetails?.specialty_name || 'Chưa có chuyên khoa'}</span>
+                </div>
+                <div className="info-item">
+                  <FiCalendar /> <span>{doctorLoading ? 'Đang tải...' : `${doctorDetails?.experience_years ?? 0} năm kinh nghiệm`}</span>
+                </div>
+                <div className="info-item">
+                  <FiMapPin /> <span>{doctorLoading ? 'Đang tải địa chỉ...' : doctorDetails?.address || 'Chưa cập nhật địa chỉ'}</span>
+                </div>
+              </>
+            )}
             <div className="info-item">
               <FiCalendar /> <span>Tham gia: {new Date(user.created_at || Date.now()).toLocaleDateString('vi-VN')}</span>
             </div>
@@ -144,13 +211,46 @@ const Profile = () => {
             <div className="form-group">
               <label className="label">Số điện thoại</label>
               <input 
-                type="text" 
+                type="tel" 
+                inputMode="tel"
+                maxLength="10"
                 className="input-field" 
                 value={profileForm.phone}
-                onChange={(e) => setProfileForm({...profileForm, phone: e.target.value})}
-                placeholder="Nhập số điện thoại"
+                onChange={(e) => setProfileForm({...profileForm, phone: e.target.value.replace(/\D/g, '')})}
+                placeholder="Nhập 10 chữ số, bắt đầu bằng 0"
               />
             </div>
+            {isDoctor && (
+              <>
+                <div className="form-group">
+                  <label className="label">Địa chỉ nhà cá nhân</label>
+                  <input
+                    type="text"
+                    className="input-field"
+                    value={profileForm.address}
+                    onChange={(e) => setProfileForm({...profileForm, address: e.target.value})}
+                    placeholder="Nhập địa chỉ nhà cá nhân"
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="label">Đổi ảnh đại diện</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="input-field"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0] || null;
+                      setAvatarFile(file);
+                      if (file) {
+                        setPreviewAvatar(URL.createObjectURL(file));
+                      } else {
+                        setPreviewAvatar(doctorDetails?.avatar_url || null);
+                      }
+                    }}
+                  />
+                </div>
+              </>
+            )}
             <button type="submit" className="btn-primary btn-profile-save" disabled={loading}>
               {loading ? 'Đang lưu...' : 'Lưu thay đổi'}
             </button>

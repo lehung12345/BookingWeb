@@ -82,9 +82,9 @@ const DoctorFooter = () => {
           <p className="copyright">
             © {new Date().getFullYear()} MediBook for Healthcare Providers.
           </p>
-          <div className="footer-bottom-links">
+          {/* <div className="footer-bottom-links">
             <Link to="/profile" className="newsletter-text" style={{marginRight: '20px'}}>Ngôn ngữ</Link>
-          </div>
+          </div> */}
         </div>
       </div>
     </footer>

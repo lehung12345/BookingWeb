@@ -71,6 +71,7 @@ builder.Services.AddScoped<ScheduleService>();
 builder.Services.AddScoped<AppointmentService>();
 builder.Services.AddScoped<SpecialtyService>();
 builder.Services.AddScoped<AdminService>();
+builder.Services.AddScoped<CloudinaryService>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>

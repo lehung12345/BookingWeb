@@ -15,8 +15,9 @@ const AdminDoctors = () => {
   const [editId, setEditId] = useState(null);
   const [form, setForm] = useState({
     full_name: '', email: '', password: '', phone: '',
-    specialty_id: '', description: '', experience_years: 0
+    specialty_id: '', description: '', experience_years: 0, address: ''
   });
+  const [avatarFile, setAvatarFile] = useState(null);
   const [creating, setCreating] = useState(false);
 
   const fetchDoctors = () => {
@@ -34,6 +35,14 @@ const AdminDoctors = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (form.phone && !/^0\d{9}$/.test(form.phone)) {
+      toast.error('Số điện thoại phải là 10 chữ số và bắt đầu bằng 0');
+      return;
+    }
+    if (!editId && !/^(?=.*[A-Za-z])(?=.*\d).{6,}$/.test(form.password)) {
+      toast.error('Mật khẩu phải ít nhất 6 ký tự và chứa cả chữ và số');
+      return;
+    }
     setCreating(true);
     try {
       const payload = { ...form, specialty_id: form.specialty_id ? parseInt(form.specialty_id) : null };
@@ -43,8 +52,9 @@ const AdminDoctors = () => {
           phone: payload.phone,
           specialty_id: payload.specialty_id,
           description: payload.description,
-          experience_years: payload.experience_years
-        });
+          experience_years: payload.experience_years,
+          address: payload.address
+        }, avatarFile);
         toast.success('Cập nhật bác sĩ thành công');
       } else {
         if (!form.full_name?.trim() || !form.email?.trim() || !form.password?.trim()) {
@@ -52,7 +62,7 @@ const AdminDoctors = () => {
           setCreating(false);
           return;
         }
-        await adminService.createDoctor(payload);
+        await adminService.createDoctor(payload, avatarFile);
         toast.success('Tạo bác sĩ thành công');
       }
       resetForm();
@@ -65,7 +75,8 @@ const AdminDoctors = () => {
   };
 
   const resetForm = () => {
-    setForm({ full_name: '', email: '', password: '', phone: '', specialty_id: '', description: '', experience_years: 0 });
+    setForm({ full_name: '', email: '', password: '', phone: '', specialty_id: '', description: '', experience_years: 0, address: '' });
+    setAvatarFile(null);
     setEditId(null);
     setShowForm(false);
   };
@@ -73,8 +84,10 @@ const AdminDoctors = () => {
   const handleEditClick = (d) => {
     setForm({
       full_name: d.full_name, email: d.email, password: '', phone: d.phone,
-      specialty_id: d.specialty_id || '', description: d.description || '', experience_years: d.experience_years || 0
+      specialty_id: d.specialty_id || '', description: d.description || '', experience_years: d.experience_years || 0,
+      address: d.address || ''
     });
+    setAvatarFile(null); // Reset avatar file for edit
     setEditId(d.id);
     setShowForm(true);
   };
@@ -111,20 +124,30 @@ const AdminDoctors = () => {
         <form className="glass-card fade-in" style={{ padding: '24px', marginBottom: '24px' }} onSubmit={handleSubmit} id="create-doctor-form">
 <h3 style={{ marginBottom: '16px', fontSize: '1.1rem' }}>{editId ? `Cập nhật thông tin: Bác sĩ ${form.full_name || '...'}` : 'Tạo bác sĩ mới'}</h3>
           <div className="admin-form-row">
-{(editId ? (
-              <>
-                <div className="form-group">
-                  <label className="label">Họ tên *</label>
-                  <input className="input-field" placeholder="Nhập họ tên" value={form.full_name}
-                    onChange={(e) => setForm({ ...form, full_name: e.target.value })} required />
-                </div>
-                <div className="form-group">
-                  <label className="label">SĐT</label>
-                  <input className="input-field" placeholder="Nhập SĐT" value={form.phone || ''}
-                    onChange={(e) => setForm({ ...form, phone: e.target.value })} />
-                </div>
-              </>
-            ) : (
+              {(editId ? (
+                <>
+                  <div className="form-group">
+                    <label className="label">Họ tên *</label>
+                    <input className="input-field" placeholder="Nhập họ tên" value={form.full_name}
+                      onChange={(e) => setForm({ ...form, full_name: e.target.value })} required />
+                  </div>
+                  <div className="form-group">
+                    <label className="label">Email</label>
+                    <input className="input-field" type="email" value={form.email} readOnly
+                      style={{ opacity: 0.6, cursor: 'not-allowed' }} />
+                  </div>
+                  <div className="form-group">
+                    <label className="label">SĐT</label>
+                    <input className="input-field" type="tel" inputMode="tel" maxLength="10" placeholder="Nhập 10 chữ số, bắt đầu bằng 0" value={form.phone || ''}
+                      onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, '') })} />
+                  </div>
+                  {/* <div className="form-group">
+                    <label className="label">Địa chỉ</label>
+                    <input className="input-field" placeholder="Nhập địa chỉ" value={form.address}
+                      onChange={(e) => setForm({ ...form, address: e.target.value })} />
+                  </div> */}
+                </>
+              ) : (
               <>
                 <div className="form-group">
                   <label className="label">Họ tên *</label>
@@ -138,13 +161,13 @@ const AdminDoctors = () => {
                 </div>
                 <div className="form-group">
                   <label className="label">Mật khẩu *</label>
-                  <input className="input-field" type="password" placeholder="Nhập mật khẩu" value={form.password}
+                  <input className="input-field" type="password" placeholder="Ít nhất 6 ký tự, chứa chữ và số" value={form.password}
                     onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength="6" />
                 </div>
                 <div className="form-group">
                   <label className="label">SĐT</label>
-                  <input className="input-field" placeholder="Nhập SĐT" value={form.phone || ''}
-                    onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+                  <input className="input-field" type="tel" inputMode="tel" maxLength="10" placeholder="Nhập 10 chữ số, bắt đầu bằng 0" value={form.phone || ''}
+                    onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, '') })} />
                 </div>
               </>
             ))}
@@ -160,6 +183,16 @@ const AdminDoctors = () => {
               <label className="label">Năm kinh nghiệm</label>
               <input className="input-field" type="number" min="0" value={form.experience_years}
                 onChange={(e) => setForm({ ...form, experience_years: parseInt(e.target.value) || 0 })} />
+            </div>
+            <div className="form-group">
+              <label className="label">Địa chỉ</label>
+              <input className="input-field" placeholder="Nhập địa chỉ" value={form.address}
+                onChange={(e) => setForm({ ...form, address: e.target.value })} />
+            </div>
+            <div className="form-group">
+              <label className="label">Ảnh đại diện</label>
+              <input className="input-field" type="file" accept="image/*"
+                onChange={(e) => setAvatarFile(e.target.files[0])} />
             </div>
           </div>
           <div className="form-group" style={{ marginTop: '16px' }}>

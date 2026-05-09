@@ -47,6 +47,19 @@ namespace Bookingweb.Controllers
             return Ok(doctor);
         }
 
+        // ✏️ UPDATE MY DOCTOR PROFILE
+        [HttpPut("me")]
+        [Authorize(Roles = "DOCTOR")]
+        public async Task<IActionResult> UpdateMyProfile([FromForm] UpdateDoctorRequest request, IFormFile? avatar)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null) return Unauthorized();
+
+            var updated = await _service.UpdateDoctorProfile(Guid.Parse(userId), request, avatar);
+            if (!updated) return NotFound(new { error = "Không tìm thấy hồ sơ bác sĩ" });
+            return Ok(new { message = "Cập nhật hồ sơ bác sĩ thành công" });
+        }
+
         // 🔍 GET DOCTORS BY SPECIALTY
         [HttpGet("specialty/{specialtyId}")]
         public async Task<IActionResult> GetBySpecialty(int specialtyId)

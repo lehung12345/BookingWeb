@@ -90,7 +90,11 @@ const DoctorList = () => {
           {filtered.map(d => (
             <Link to={`/doctor/${d.id}`} key={d.id} className="doctor-card glass-card" id={`doctor-card-${d.id}`}>
               <div className="dc-avatar">
-                {d.full_name?.charAt(0) || 'D'}
+                {d.avatar_url ? (
+                  <img src={d.avatar_url} alt={d.full_name} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                ) : (
+                  d.full_name?.charAt(0) || 'D'
+                )}
               </div>
               <div className="dc-info">
                 <h3>BS. {d.full_name}</h3>
