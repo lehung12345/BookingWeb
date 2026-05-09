@@ -124,30 +124,30 @@ const AdminDoctors = () => {
         <form className="glass-card fade-in" style={{ padding: '24px', marginBottom: '24px' }} onSubmit={handleSubmit} id="create-doctor-form">
 <h3 style={{ marginBottom: '16px', fontSize: '1.1rem' }}>{editId ? `Cập nhật thông tin: Bác sĩ ${form.full_name || '...'}` : 'Tạo bác sĩ mới'}</h3>
           <div className="admin-form-row">
-{(editId ? (
-              <>
-                <div className="form-group">
-                  <label className="label">Họ tên *</label>
-                  <input className="input-field" placeholder="Nhập họ tên" value={form.full_name}
-                    onChange={(e) => setForm({ ...form, full_name: e.target.value })} required />
-                </div>
-                <div className="form-group">
-                  <label className="label">SĐT</label>
-                  <input className="input-field" type="tel" inputMode="tel" maxLength="10" placeholder="Nhập 10 chữ số, bắt đầu bằng 0" value={form.phone || ''}
-                    onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, '') })} />
-                </div>
-                <div className="form-group">
-                  <label className="label">Địa chỉ</label>
-                  <input className="input-field" placeholder="Nhập địa chỉ" value={form.address}
-                    onChange={(e) => setForm({ ...form, address: e.target.value })} />
-                </div>
-                <div className="form-group">
-                  <label className="label">Ảnh đại diện</label>
-                  <input className="input-field" type="file" accept="image/*"
-                    onChange={(e) => setAvatarFile(e.target.files[0])} />
-                </div>
-              </>
-            ) : (
+              {(editId ? (
+                <>
+                  <div className="form-group">
+                    <label className="label">Họ tên *</label>
+                    <input className="input-field" placeholder="Nhập họ tên" value={form.full_name}
+                      onChange={(e) => setForm({ ...form, full_name: e.target.value })} required />
+                  </div>
+                  <div className="form-group">
+                    <label className="label">Email</label>
+                    <input className="input-field" type="email" value={form.email} readOnly
+                      style={{ opacity: 0.6, cursor: 'not-allowed' }} />
+                  </div>
+                  <div className="form-group">
+                    <label className="label">SĐT</label>
+                    <input className="input-field" type="tel" inputMode="tel" maxLength="10" placeholder="Nhập 10 chữ số, bắt đầu bằng 0" value={form.phone || ''}
+                      onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, '') })} />
+                  </div>
+                  {/* <div className="form-group">
+                    <label className="label">Địa chỉ</label>
+                    <input className="input-field" placeholder="Nhập địa chỉ" value={form.address}
+                      onChange={(e) => setForm({ ...form, address: e.target.value })} />
+                  </div> */}
+                </>
+              ) : (
               <>
                 <div className="form-group">
                   <label className="label">Họ tên *</label>
